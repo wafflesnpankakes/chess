@@ -42,15 +42,18 @@ public class Piece {
         int x = currentSquare.getX();
         int y = currentSquare.getY();
         
-        g.drawImage(this.img, x, y, null);
+        g.drawImage(this.img.getScaledInstance(50,50, Image.SCALE_DEFAULT), x, y, null);
     }
     
     
     // TO BE IMPLEMENTED!
     //return a list of every square that is "controlled" by this piece. A square is controlled
     //if the piece capture into it legally.
+
+    // precondition: the pieces and the board have been created
+    //postconditon: returns an array of squares that the selected piece can control and can move to
     public ArrayList<Square> getControlledSquares(Square[][] board, Square start) {
-     return null;
+     return new ArrayList<Square>();
     }
     
 
@@ -60,7 +63,125 @@ public class Piece {
     //returns an arraylist of squares which are legal to move to
     //please note that your piece must have some sort of logic. Just being able to move to every square on the board is not
     //going to score any points.
+
+    // Rules of my piece: moves like a queen, but can only move to capture a piece of the opponent's. The piece can pass over another peice of the same color, 
+    // but cannot share or take a square with a piece that has the same color (obiously lol)
+
+    //precondition: the board and pieces have been created
+    //postcondition: returns an array of squares where the selected piece is able to move to
     public ArrayList<Square> getLegalMoves(Board b, Square start){
-    	return null;
+      ArrayList<Square> possibleLegalMoves = new ArrayList<Square>();
+      
+      //vertical below
+      for(int r=start.getRow()+1; r<8; r++){
+        Square legalSquare = b.getSquareArray()[r][start.getCol()];
+        if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() != color ){
+          possibleLegalMoves.add(legalSquare);
+          break;
+        }
+        else if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() == color ){
+          break;
+        }
+      }
+
+      //vertical above
+      for(int r=start.getRow()-1; r>0; r--){
+        Square legalSquare = b.getSquareArray()[r][start.getCol()];
+        if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() != color){
+          possibleLegalMoves.add(legalSquare);
+          break;
+        }
+        else if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() == color ){
+          break;
+        }
+      }
+
+      //horizontal right
+      for(int c= start.getCol()-1; c>0; c--){
+        Square legalSquare = b.getSquareArray()[start.getRow()][c];
+        if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() != color ){
+          possibleLegalMoves.add(legalSquare);
+          break;
+        }
+        else if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() == color ){
+          break;
+        }
+      }
+
+      //horizontal left
+      for(int c= start.getCol()+1; c<8; c++){
+        Square legalSquare = b.getSquareArray()[start.getRow()][c];
+        if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() != color ){
+          possibleLegalMoves.add(legalSquare);
+          break;
+        }
+        else if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() == color ){
+          break;
+        }
+      }
+
+      //diagonal above & right
+      
+      for(int r=start.getRow()-1, c= start.getCol()+1; r>0; r--, c++){
+        if(c >= 8){
+          break;
+        }
+        Square legalSquare = b.getSquareArray()[r][c];
+        if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() != color ){
+          possibleLegalMoves.add(legalSquare);
+          break;
+        }
+        else if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() == color){
+          break;
+        }
+      }
+
+      //diagonal above & left
+      for(int r=start.getRow()-1, c= start.getCol()-1; r>0; r--, c--){
+        if(c<0){
+          break;
+        }
+        Square legalSquare = b.getSquareArray()[r][c];
+        if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() != color ){
+          possibleLegalMoves.add(legalSquare);
+          break;
+        }
+        else if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() == color ){
+          break;
+        }
+      }
+        
+      //diagonal below & right
+      for(int r=start.getRow()+1, c= start.getCol()+1; r<8; r++, c++){
+        if(c>=8){
+          break;
+        }
+        Square legalSquare = b.getSquareArray()[r][c];
+       
+        if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() != color ){
+          possibleLegalMoves.add(legalSquare);
+          break;
+        }
+        else if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() == color){
+          break;
+        }
+      } 
+
+      // diagonal below and left
+      for(int r=start.getRow()+1, c= start.getCol()-1; r<8; r++, c--){
+        if(c<0){
+          break;
+        }
+        Square legalSquare = b.getSquareArray()[r][c];
+        if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() != color ){
+          possibleLegalMoves.add(legalSquare);
+          break;
+        }
+        else if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() == color ){
+          break;
+        }
+      }
+
+    	return possibleLegalMoves;
     }
 }
