@@ -43,7 +43,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
     private boolean whiteTurn;
 
     //if the player is currently dragging a piece this variable contains it.
-    private Piece currPiece;
+    private Assassin currPiece;
     private Square fromMoveSquare;
     
     //used to keep track of the x/y coordinates of the mouse.
@@ -105,10 +105,10 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
         for(int i=0; i<8; i++){
             for (int k=0; k<8; k++){
                 if(i < 2){
-                    board[i][k].put(new Piece(true, RESOURCES_WASSASSIN_PNG)); 
+                    board[i][k].put(new Assassin(true, RESOURCES_WASSASSIN_PNG)); 
                 }
                 else if(i > 5){
-                    board[i][k].put(new Piece(false, RESOURCES_BASSASSIN_PNG));
+                    board[i][k].put(new Assassin(false, RESOURCES_BASSASSIN_PNG));
                 }
             }
         }
@@ -123,11 +123,11 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
         return whiteTurn;
     }
 
-    public void setCurrPiece(Piece p) {
+    public void setCurrPiece(Assassin p) {
         this.currPiece = p;
     }
 
-    public Piece getCurrPiece() {
+    public Assassin getCurrPiece() {
         return this.currPiece;
     }
 
@@ -159,6 +159,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
         currY = e.getY();
 
         Square sq = (Square) this.getComponentAt(new Point(e.getX(), e.getY()));
+        
 
         if (sq.isOccupied()) {
             currPiece = sq.getOccupyingPiece();
@@ -197,6 +198,8 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
                 endSquare.put(currPiece);
                 fromMoveSquare.put(null);
                 whiteTurn = !whiteTurn;
+
+                System.out.println(currPiece.toString());
             }
         }
         

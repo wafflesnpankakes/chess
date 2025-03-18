@@ -1,187 +1,58 @@
-
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-
 import javax.imageio.ImageIO;
 
-//you will need to implement two functions in this file.
 public class Piece {
-    private final boolean color;
-    private BufferedImage img;
-    
-    public Piece(boolean isWhite, String img_file) {
-        this.color = isWhite;
-        
-        try {
-            if (this.img == null) {
-              this.img = ImageIO.read(getClass().getResource(img_file));
-            }
-          } catch (IOException e) {
-            System.out.println("File not found: " + e.getMessage());
-          }
-    }
-    
-    
+	private boolean color;
+	private BufferedImage img;
 
-    
-    public boolean getColor() {
-        return color;
-    }
-    
-    public Image getImage() {
-        return img;
-    }
-    
-    public void draw(Graphics g, Square currentSquare) {
-        int x = currentSquare.getX();
-        int y = currentSquare.getY();
-        
-        g.drawImage(this.img.getScaledInstance(50,50, Image.SCALE_DEFAULT), x, y, null);
-    }
-    
-    
-    // TO BE IMPLEMENTED!
-    //return a list of every square that is "controlled" by this piece. A square is controlled
-    //if the piece capture into it legally.
+	public Piece(boolean color, String img_file) {
+		this.color = color;
+		try {
+			if (this.img == null) {
+				this.img = ImageIO.read(getClass().getResource(img_file));
+			}
+		} catch (IOException e) {
+			System.out.println("File not found: " + e.getMessage());
+		}
+	}
 
-    // precondition: the pieces and the board have been created
-    //postconditon: returns an array of squares that the selected piece can control and can move to
-    public ArrayList<Square> getControlledSquares(Square[][] board, Square start) {
-     return new ArrayList<Square>();
-    }
-    
+	public boolean getColor() {
+		return color;
+	}
 
-    //TO BE IMPLEMENTED!
-    //implement the move function here
-    //it's up to you how the piece moves, but at the very least the rules should be logical and it should never move off the board!
-    //returns an arraylist of squares which are legal to move to
-    //please note that your piece must have some sort of logic. Just being able to move to every square on the board is not
-    //going to score any points.
+	public Image getImage() {
+		return img;
+	}
 
-    // Rules of my piece: moves like a queen, but can only move to capture a piece of the opponent's. The piece can pass over another peice of the same color, 
-    // but cannot share or take a square with a piece that has the same color (obiously lol)
+	public void draw(Graphics g, Square currentSquare) {
+		int x = currentSquare.getX();
+		int y = currentSquare.getY();
+		g.drawImage(this.img.getScaledInstance(50,50, Image.SCALE_DEFAULT), x, y, null);
+	}
 
-    //precondition: the board and pieces have been created
-    //postcondition: returns an array of squares where the selected piece is able to move to
-    public ArrayList<Square> getLegalMoves(Board b, Square start){
-      ArrayList<Square> possibleLegalMoves = new ArrayList<Square>();
-      
-      //vertical below
-      for(int r=start.getRow()+1; r<8; r++){
-        Square legalSquare = b.getSquareArray()[r][start.getCol()];
-        if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() != color ){
-          possibleLegalMoves.add(legalSquare);
-          break;
-        }
-        else if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() == color ){
-          break;
-        }
-      }
+	
 
-      //vertical above
-      for(int r=start.getRow()-1; r>0; r--){
-        Square legalSquare = b.getSquareArray()[r][start.getCol()];
-        if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() != color){
-          possibleLegalMoves.add(legalSquare);
-          break;
-        }
-        else if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() == color ){
-          break;
-        }
-      }
+// to be overriden in each subclass
+	public ArrayList<Square> getLegalMoves(Board b, Square currentSquare) {
+		return null;
+	}
 
-      //horizontal right
-      for(int c= start.getCol()-1; c>0; c--){
-        Square legalSquare = b.getSquareArray()[start.getRow()][c];
-        if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() != color ){
-          possibleLegalMoves.add(legalSquare);
-          break;
-        }
-        else if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() == color ){
-          break;
-        }
-      }
+//make sure to override this!
+	public String toString() {
+		if (color)
+			return "white";
+		else
+			return "black";
+	}
 
-      //horizontal left
-      for(int c= start.getCol()+1; c<8; c++){
-        Square legalSquare = b.getSquareArray()[start.getRow()][c];
-        if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() != color ){
-          possibleLegalMoves.add(legalSquare);
-          break;
-        }
-        else if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() == color ){
-          break;
-        }
-      }
+// to be implemented by each subclass
+	public ArrayList<Square> getControlledSquares(Square[][] board, Square currentSquare) {
 
-      //diagonal above & right
-      
-      for(int r=start.getRow()-1, c= start.getCol()+1; r>0; r--, c++){
-        if(c >= 8){
-          break;
-        }
-        Square legalSquare = b.getSquareArray()[r][c];
-        if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() != color ){
-          possibleLegalMoves.add(legalSquare);
-          break;
-        }
-        else if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() == color){
-          break;
-        }
-      }
-
-      //diagonal above & left
-      for(int r=start.getRow()-1, c= start.getCol()-1; r>0; r--, c--){
-        if(c<0){
-          break;
-        }
-        Square legalSquare = b.getSquareArray()[r][c];
-        if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() != color ){
-          possibleLegalMoves.add(legalSquare);
-          break;
-        }
-        else if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() == color ){
-          break;
-        }
-      }
-        
-      //diagonal below & right
-      for(int r=start.getRow()+1, c= start.getCol()+1; r<8; r++, c++){
-        if(c>=8){
-          break;
-        }
-        Square legalSquare = b.getSquareArray()[r][c];
-       
-        if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() != color ){
-          possibleLegalMoves.add(legalSquare);
-          break;
-        }
-        else if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() == color){
-          break;
-        }
-      } 
-
-      // diagonal below and left
-      for(int r=start.getRow()+1, c= start.getCol()-1; r<8; r++, c--){
-        if(c<0){
-          break;
-        }
-        Square legalSquare = b.getSquareArray()[r][c];
-        if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() != color ){
-          possibleLegalMoves.add(legalSquare);
-          break;
-        }
-        else if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() == color ){
-          break;
-        }
-      }
-
-    	return possibleLegalMoves;
-    }
+		return null;
+	}
 }
