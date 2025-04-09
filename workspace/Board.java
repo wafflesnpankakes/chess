@@ -22,18 +22,18 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 	// Resource location constants for piece images
     private static final String RESOURCES_WBISHOP_PNG = "wbishop.png";
 	private static final String RESOURCES_BBISHOP_PNG = "bbishop.png";
-	private static final String RESOURCES_WKNIGHT_PNG = "wknight.png";
-	private static final String RESOURCES_BKNIGHT_PNG = "bknight.png";
 	private static final String RESOURCES_WROOK_PNG = "wrook.png";
 	private static final String RESOURCES_BROOK_PNG = "brook.png";
 	private static final String RESOURCES_WKING_PNG = "wking.png";
 	private static final String RESOURCES_BKING_PNG = "bking.png";
 	private static final String RESOURCES_BQUEEN_PNG = "bqueen.png";
 	private static final String RESOURCES_WQUEEN_PNG = "wqueen.png";
-	private static final String RESOURCES_WPAWN_PNG = "wpawn.png";
-	private static final String RESOURCES_BPAWN_PNG = "bpawn.png";
     private static final String RESOURCES_WASSASSIN_PNG = "WAssassin.png";
     private static final String RESOURCES_BASSASSIN_PNG = "BAssassin.png";
+    private static final String RESOURCES_BANIPAWN_PNG = "bAntiPawn.png";
+    private static final String RESOURCES_WANIPAWN_PNG = "wAntiPawn.png";
+    private static final String RESOURCES_WJESTER_PNG = "wjester.png";
+    private static final String RESOURCES_BJESTER_PNG = "bjester.png";
 	
 	// Logical and graphical representations of board
 	private final Square[][] board;
@@ -43,7 +43,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
     private boolean whiteTurn;
 
     //if the player is currently dragging a piece this variable contains it.
-    private Assassin currPiece;
+    private Piece currPiece;
     private Square fromMoveSquare;
     
     //used to keep track of the x/y coordinates of the mouse.
@@ -101,17 +101,54 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
     //precondition: board is initialized
     //postcondition: creates My Piece, called the Assassin, on the board where the regular pieces would go. white on ones side, black on the other
     private void initializePieces() {
+        
+        //kings
+        board[7][4].put(new King(false, RESOURCES_BKING_PNG));
+        board[0][4].put(new King(true, RESOURCES_WKING_PNG));
+        
+        //Queen
+        board[7][3].put(new Queen(false, RESOURCES_BQUEEN_PNG));
+        board[0][3].put(new Queen(true, RESOURCES_WQUEEN_PNG));
 
-        for(int i=0; i<8; i++){
-            for (int k=0; k<8; k++){
-                if(i < 2){
-                    board[i][k].put(new Assassin(true, RESOURCES_WASSASSIN_PNG)); 
-                }
-                else if(i > 5){
-                    board[i][k].put(new Assassin(false, RESOURCES_BASSASSIN_PNG));
-                }
-            }
-        }
+
+        //bishops
+        board[0][5].put(new Bishop(true, RESOURCES_WBISHOP_PNG));
+        board[7][5].put(new Bishop(false, RESOURCES_BBISHOP_PNG));
+        board[0][2].put(new Bishop(true, RESOURCES_WBISHOP_PNG));
+        board[7][2].put(new Bishop(false, RESOURCES_BBISHOP_PNG));
+
+        //rooks
+        board[0][0].put(new Rook(true, RESOURCES_WROOK_PNG));
+        board[7][7].put(new Rook(false, RESOURCES_BROOK_PNG));
+        board[0][7].put(new Rook(true, RESOURCES_WROOK_PNG));
+        board[7][0].put(new Rook(false, RESOURCES_BROOK_PNG));
+
+        //anti pawns
+        board[6][0].put(new AntiPawn(false, RESOURCES_BANIPAWN_PNG));
+        board[1][0].put(new AntiPawn(true, RESOURCES_WANIPAWN_PNG));
+        board[6][6].put(new AntiPawn(false, RESOURCES_BANIPAWN_PNG));
+        board[1][6].put(new AntiPawn(true, RESOURCES_WANIPAWN_PNG));
+        board[6][2].put(new AntiPawn(false, RESOURCES_BANIPAWN_PNG));
+        board[1][2].put(new AntiPawn(true, RESOURCES_WANIPAWN_PNG));
+        board[6][4].put(new AntiPawn(false, RESOURCES_BANIPAWN_PNG));
+        board[1][4].put(new AntiPawn(true, RESOURCES_WANIPAWN_PNG));
+
+        //jesters
+        board[1][1].put(new Jester(true, RESOURCES_WJESTER_PNG));
+        board[6][3].put(new Jester(false, RESOURCES_BJESTER_PNG));
+        board[1][5].put(new Jester(true, RESOURCES_WJESTER_PNG));
+        board[6][1].put(new Jester(false, RESOURCES_BJESTER_PNG));
+        board[1][3].put(new Jester(true, RESOURCES_WJESTER_PNG));
+        board[6][5].put(new Jester(false, RESOURCES_BJESTER_PNG));
+        board[1][7].put(new Jester(true, RESOURCES_WJESTER_PNG));
+        board[6][7].put(new Jester(false, RESOURCES_BJESTER_PNG));
+
+        //assassins
+        board[0][1].put(new Assassin(true, RESOURCES_WASSASSIN_PNG));
+        board[7][1].put(new Assassin(false, RESOURCES_BASSASSIN_PNG));
+        board[0][6].put(new Assassin(true, RESOURCES_WASSASSIN_PNG));
+        board[7][6].put(new Assassin(false, RESOURCES_BASSASSIN_PNG));
+
             
     }
 
@@ -123,11 +160,11 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
         return whiteTurn;
     }
 
-    public void setCurrPiece(Assassin p) {
+    public void setCurrPiece(Piece p) {
         this.currPiece = p;
     }
 
-    public Assassin getCurrPiece() {
+    public Piece getCurrPiece() {
         return this.currPiece;
     }
 
@@ -184,6 +221,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
     public void mouseReleased(MouseEvent e) {
     
         Square endSquare = (Square) this.getComponentAt(new Point(e.getX(), e.getY()));
+        
 
         
         for(Square [] row: board){
@@ -192,14 +230,27 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
             }
         }
 
-        for( Square i : currPiece.getLegalMoves(this, fromMoveSquare)){
-            if( endSquare == i ){
-                endSquare.setBorder(BorderFactory.createLineBorder(Color.WHITE));
-                endSquare.put(currPiece);
-                fromMoveSquare.put(null);
-                whiteTurn = !whiteTurn;
+        if(currPiece.getColor()== whiteTurn){
+            for( Square i : currPiece.getLegalMoves(this, fromMoveSquare)){
+                if( endSquare == i ){
+                    endSquare.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+                    Piece oldPiece = endSquare.getOccupyingPiece();
+                    endSquare.put(currPiece);
+                    fromMoveSquare.put(null);
 
-                System.out.println(currPiece.toString());
+                    
+                    if(isInCheck(whiteTurn)){
+                        //undo the move that just happened
+                        endSquare.put(oldPiece);
+                        fromMoveSquare.put(currPiece);
+                         
+                    }
+                    else{
+
+                        whiteTurn = !whiteTurn;
+                    }
+                    System.out.println(currPiece.toString());
+                }
             }
         }
         
@@ -241,5 +292,24 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
     @Override
     public void mouseExited(MouseEvent e) {
     }
+
+    //precondition - the board is initialized and contains a king of either color. The boolean kingColor corresponds to the color of the king we wish to know the status of.
+    //postcondition - returns true of the king is in check and false otherwise.
+	public boolean isInCheck(boolean kingColor){
+        for(Square [] row: board){
+            for(Square s:row){
+                if(s.isOccupied() && s.getOccupyingPiece().getColor() != kingColor){
+                    ArrayList<Square> controlledSquares = s.getOccupyingPiece().getControlledSquares(this.getSquareArray(), s);
+                    for(Square checkThis : controlledSquares){
+                        if(checkThis.isOccupied() && checkThis.getOccupyingPiece() instanceof King && checkThis.getOccupyingPiece().getColor() == kingColor){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
 
 }

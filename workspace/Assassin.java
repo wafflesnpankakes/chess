@@ -27,16 +27,7 @@ public class Assassin extends Piece {
   //postcondition: returns a string stating what color the piece is and the type. EX: "A black assassin"
   public String toString(){
 
-    String printColor = " ";
-
-    if(super.getColor() == true){
-      printColor = "white";
-    }
-    else {
-      printColor = "black";
-    }
-
-    return "A " + printColor + " Assassin";
+    return "A " + super.toString() + " Assassin";
   }
     
     // TO BE IMPLEMENTED!
@@ -75,7 +66,7 @@ public class Assassin extends Piece {
       }
 
       //vertical above
-      for(int r=start.getRow()-1; r>0; r--){
+      for(int r=start.getRow()-1; r>=0; r--){
         Square legalSquare = b.getSquareArray()[r][start.getCol()];
         if(legalSquare.isOccupied() && legalSquare.getOccupyingPiece().getColor() != super.getColor()){
           possibleLegalMoves.add(legalSquare);
@@ -112,7 +103,7 @@ public class Assassin extends Piece {
 
       //diagonal above & right
       
-      for(int r=start.getRow()-1, c= start.getCol()+1; r>0; r--, c++){
+      for(int r=start.getRow()-1, c= start.getCol()+1; r>=0; r--, c++){
         if(c >= 8){
           break;
         }
@@ -127,7 +118,7 @@ public class Assassin extends Piece {
       }
 
       //diagonal above & left
-      for(int r=start.getRow()-1, c= start.getCol()-1; r>0; r--, c--){
+      for(int r=start.getRow()-1, c= start.getCol()-1; r>=0; r--, c--){
         if(c<0){
           break;
         }
